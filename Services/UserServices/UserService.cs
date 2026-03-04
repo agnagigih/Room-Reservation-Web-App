@@ -17,18 +17,20 @@ namespace RoomBooking.Services.UserServices
 
         public async Task<List<User>> GetAllAsync(string? search)
         {
-            var query = _context.Users.AsNoTracking().AsQueryable();
+            var query = _context.Users
+                .AsNoTracking()
+                .Where(u => !u.IsDeleted)
+                .AsQueryable();
 
             if (!string.IsNullOrEmpty(search))
-                query = query.Where(u => u.FullName.Contains(search) || u.Email.Contains(search))
-                    .Where(u => u.IsDeleted == false);
+                query = query.Where(u => u.FullName.Contains(search) || u.Email.Contains(search));
 
             return await query.OrderBy(u => u.FullName).ToListAsync();
         }
 
         public async Task<User?> GetByIdAsync(int id)
         {
-            return await _context.Users.Where(u => u.Id == id && u.IsDeleted == false).FirstOrDefaultAsync();
+            return await _context.Users.Where(u => u.Id == id && !u.IsDeleted).FirstOrDefaultAsync();
         }
 
         public async Task<User?> GetDetailAsync(int id)
@@ -36,15 +38,13 @@ namespace RoomBooking.Services.UserServices
             return await _context.Users
                 .AsNoTracking()
                 .Include(u => u.Bookings).ThenInclude(b => b.Room)
-                .Where (u => u.IsDeleted == false)
-                .FirstOrDefaultAsync(u => u.Id == id);
+                .FirstOrDefaultAsync(u => u.Id == id && !u.IsDeleted);
         }
 
         public async Task<bool> IsEmailTakenAsync(string email, int? excludeId = null)
         {
             return await _context.Users
-                .Where(u=> u.IsDeleted == false)
-                .AnyAsync(u => u.Email == email && (excludeId == null || u.Id != excludeId));
+                .AnyAsync(u => u.Email == email && !u.IsDeleted && (excludeId == null || u.Id != excludeId));
         }
 
         public async Task CreateAsync(UserCreateViewModel model)
@@ -86,7 +86,18 @@ namespace RoomBooking.Services.UserServices
             if (user == null) return false;
 
             // soft delete
-            user.IsDeleted = false;
+            user.IsDeleted = true;
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> DeactivateAsync(int id)
+        {
+            var user = await _context.Users.FindAsync(id);
+            if (user == null) return false;
+
+            // soft delete
+            user.IsActive = false;
             await _context.SaveChangesAsync();
             return true;
         }

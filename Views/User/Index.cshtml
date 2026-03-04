@@ -48,12 +48,21 @@
                         <td>@u.CreatedAt.ToString("dd/MM/yyyy")</td>
                         <td>
                             <div class="d-flex gap-1">
-                                <a asp-action="Detail" asp-route-id="@u.Id" class="btn btn-xs btn-outline-info"><i class="fas fa-eye"></i></a>
-                                <a asp-action="Edit" asp-route-id="@u.Id" class="btn btn-xs btn-outline-warning"><i class="fas fa-edit"></i></a>
+                                <a asp-action="Detail" asp-route-id="@u.Id" class="btn btn-xs btn-outline-info"><i class="fas fa-eye" title="Detail"></i></a>
+                                <a asp-action="Edit" asp-route-id="@u.Id" class="btn btn-xs btn-outline-warning"><i class="fas fa-edit" title="Edit"></i></a>
+                                @if (u.IsActive)
+                                {
+                                    <form asp-action="Deactivate" asp-route-id="@u.Id" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <button onclick="return confirm('Nonaktifkan user @u.FullName?')" class="btn btn-xs btn-outline-danger" title="Nonaktifkan">
+                                            <i class="fas fa-ban"></i>
+                                        </button>
+                                    </form>
+                                }
                                 <form asp-action="Delete" asp-route-id="@u.Id" method="post" class="d-inline">
                                     @Html.AntiForgeryToken()
-                                    <button onclick="return confirm('Hapus user @u.FullName?')" class="btn btn-xs btn-outline-danger">
-                                        <i class="fas fa-ban"></i>
+                                    <button onclick="return confirm('Hapus user @u.FullName?')" class="btn btn-xs btn-outline-danger" title="Hapus">
+                                        <i class="fas fa-trash"></i>
                                     </button>
                                 </form>
                             </div>

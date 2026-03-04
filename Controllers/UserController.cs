@@ -17,7 +17,6 @@ namespace RoomBooking.Controllers
             _userService = userService;
         }
 
-        // GET: User/Index
         public async Task<IActionResult> Index(string? search)
         {
             ViewBag.Search = search;
@@ -25,10 +24,8 @@ namespace RoomBooking.Controllers
             return View(users);
         }
 
-        // GET: User/Create
         public IActionResult Create() => View(new UserCreateViewModel());
 
-        // POST: User/Create
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(UserCreateViewModel model)
         {
@@ -46,7 +43,6 @@ namespace RoomBooking.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: User/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
             var user = await _userService.GetByIdAsync(id);
@@ -63,7 +59,6 @@ namespace RoomBooking.Controllers
             return View(viewUser);
         }
 
-        // POST: User/Edit/5
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, UserEditViewModel model)
         {
@@ -83,7 +78,6 @@ namespace RoomBooking.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: User/Detail/5
         public async Task<IActionResult> Detail(int id)
         {
             var user = await _userService.GetByIdAsync(id);
@@ -91,7 +85,6 @@ namespace RoomBooking.Controllers
             return View(user);
         }
 
-        // POST: User/Delete/5
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
@@ -99,6 +92,17 @@ namespace RoomBooking.Controllers
             if (user == null) return NotFound();
 
             await _userService.DeleteAsync(id);
+            TempData["Success"] = $"User '{user.FullName}' berhasil dihapus.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> Deactivate(int id)
+        {
+            var user = await _userService.GetByIdAsync(id);
+            if (user == null) return NotFound();
+
+            await _userService.DeactivateAsync(id);
             TempData["Success"] = $"User '{user.FullName}' berhasil dinonaktifkan.";
             return RedirectToAction(nameof(Index));
         }

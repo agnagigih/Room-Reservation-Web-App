@@ -12,5 +12,6 @@ namespace RoomBooking.Services.UserServices
         public Task CreateAsync(UserCreateViewModel model);
         public Task<bool> UpdateAsync(int id, UserEditViewModel model);
         public Task<bool> DeleteAsync(int id);
+        public Task<bool> DeactivateAsync(int id);
     }
 }
