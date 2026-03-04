@@ -43,15 +43,15 @@ namespace RoomBooking.Data
                 Role = "Admin",
                 IsActive = true,
                 IsDeleted = false,
-                CreatedAt = new DateTime(2024, 1, 1)
+                CreatedAt = new DateTime(2026, 1, 1)
             });
 
             // Seed Rooms
             modelBuilder.Entity<Room>().HasData(
-                new Room { Id = 1, Name = "Ruang Rapat Utama", Location = "Lantai 1", Capacity = 20, Description = "Ruang rapat besar dengan proyektor & AC", IsActive = true, CreatedAt = new DateTime(2024, 1, 1) },
-                new Room { Id = 2, Name = "Ruang Meeting A", Location = "Lantai 2", Capacity = 10, Description = "Ruang meeting sedang dilengkapi TV 55 inch", IsActive = true, CreatedAt = new DateTime(2024, 1, 1) },
-                new Room { Id = 3, Name = "Ruang Training", Location = "Lantai 3", Capacity = 50, Description = "Ruang training kapasitas besar", IsActive = true, CreatedAt = new DateTime(2024, 1, 1) },
-                new Room { Id = 4, Name = "Ruang Direksi", Location = "Lantai 4", Capacity = 8, Description = "Ruang meeting eksklusif untuk direksi", IsActive = true, CreatedAt = new DateTime(2024, 1, 1) }
+                new Room { Id = 1, Name = "Ruang Rapat Utama", Location = "Lantai 1", Capacity = 20, Description = "Ruang rapat besar dengan proyektor & AC", IsActive = true, CreatedAt = new DateTime(2026, 1, 1) },
+                new Room { Id = 2, Name = "Ruang Meeting A", Location = "Lantai 2", Capacity = 10, Description = "Ruang meeting sedang dilengkapi TV 55 inch", IsActive = true, CreatedAt = new DateTime(2026, 1, 1) },
+                new Room { Id = 3, Name = "Ruang Training", Location = "Lantai 3", Capacity = 50, Description = "Ruang training kapasitas besar", IsActive = true, CreatedAt = new DateTime(2026, 1, 1) },
+                new Room { Id = 4, Name = "Ruang Direksi", Location = "Lantai 4", Capacity = 8, Description = "Ruang meeting eksklusif untuk direksi", IsActive = true, CreatedAt = new DateTime(2026, 1, 1) }
             );
         }
     }

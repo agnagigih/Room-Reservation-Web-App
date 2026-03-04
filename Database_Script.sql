@@ -34,6 +34,7 @@ CREATE TABLE Users (
     PasswordHash NVARCHAR(255) NOT NULL,
     Role        NVARCHAR(20)   NOT NULL DEFAULT 'User',  -- 'Admin' | 'User'
     IsActive    BIT            NOT NULL DEFAULT 1,
+    IsDeleted   BIT            NOT NULL DEFAULT 0,
     CreatedAt   DATETIME2(7)   NOT NULL DEFAULT GETDATE(),
 
     CONSTRAINT PK_Users        PRIMARY KEY (Id),
@@ -97,9 +98,9 @@ GO
 -- Admin user (password: Admin@123)
 INSERT INTO Users (FullName, Email, PasswordHash, Role, IsActive, IsDeleted, CreatedAt)
 VALUES
-    (N'Administrator',   N'admin@roombooking.com',  N'$2a$11$xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', N'Admin', 1, 0, '2024-01-01'),
-    (N'User 1',        N'user1@roombooking.com',   N'$2a$11$xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', N'User',  1, 0, '2024-01-15'),
-    (N'User 2',      N'user2@roombooking.com',   N'$2a$11$xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', N'User',  1, 0, '2024-01-20');
+    (N'Administrator',   N'admin@roombooking.com',  N'$2a$11$xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', N'Admin', 1, 0, '2026-01-01'),
+    (N'User 1',        N'user1@roombooking.com',   N'$2a$11$xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', N'User',  1, 0, '2026-01-15'),
+    (N'User 2',      N'user2@roombooking.com',   N'$2a$11$xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', N'User',  1, 0, '2026-01-20');
 GO
 
 -- NOTE: PasswordHash di atas adalah placeholder.
