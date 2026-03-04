@@ -1,0 +1,80 @@
+@model RoomBooking.Models.Room
+@{
+    ViewData["Title"] = "Detail Ruangan";
+}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card mb-3">
+            <div class="card-header py-3 px-4 d-flex justify-content-between">
+                <h5 class="mb-0 fw-bold"><i class="fas fa-door-open me-2 text-primary"></i>@Model.Name</h5>
+                <div class="d-flex gap-2">
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-sm btn-warning">Edit</a>
+                    }
+                    <a asp-action="Index" class="btn btn-sm btn-outline-secondary">Kembali</a>
+                </div>
+            </div>
+            <div class="card-body px-4">
+                <div class="row g-3">
+                    <div class="col-sm-4">
+                        <div class="bg-light rounded p-3">
+                            <div class="text-muted small">Lokasi</div>
+                            <div class="fw-semibold">@Model.Location</div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="bg-light rounded p-3">
+                            <div class="text-muted small">Kapasitas</div>
+                            <div class="fw-semibold">@Model.Capacity orang</div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="bg-light rounded p-3">
+                            <div class="text-muted small">Status</div>
+                            <span class="badge @(Model.IsActive ? "bg-success" : "bg-secondary") mt-1">@(Model.IsActive ? "Aktif" : "Nonaktif")</span>
+                        </div>
+                    </div>
+                    @if (!string.IsNullOrEmpty(Model.Description))
+                    {
+                        <div class="col-12">
+                            <div class="bg-light rounded p-3">
+                                <div class="text-muted small">Deskripsi</div>
+                                <div>@Model.Description</div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header py-3 px-4 d-flex justify-content-between align-items-center">
+                <h6 class="mb-0 fw-bold">Jadwal Booking (@Model.Bookings.Count)</h6>
+                <a asp-controller="Booking" asp-action="Create" class="btn btn-sm btn-primary">
+                    <i class="fas fa-plus me-1"></i>Buat Booking
+                </a>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-sm mb-0">
+                    <thead class="bg-light"><tr><th class="px-4">Pemohon</th><th>Tanggal</th><th>Jam</th><th>Status</th></tr></thead>
+                    <tbody>
+                        @foreach (var b in Model.Bookings.OrderByDescending(x => x.BookingDate).Take(10))
+                        {
+                            <tr>
+                                <td class="px-4">@b.User?.FullName</td>
+                                <td>@b.BookingDate.ToString("dd/MM/yyyy")</td>
+                                <td>@b.StartTime–@b.EndTime</td>
+                                <td><span class="badge @(b.Status == "Approved" ? "bg-success" : b.Status == "Pending" ? "bg-warning text-dark" : "bg-secondary")">@b.Status</span></td>
+                            </tr>
+                        }
+                        @if (!Model.Bookings.Any())
+                        {
+                            <tr><td colspan="4" class="text-center text-muted py-3">Belum ada booking untuk ruangan ini</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

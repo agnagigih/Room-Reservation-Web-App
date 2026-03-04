@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Room Booking System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        :root {
+            --primary: #2563eb;
+            --sidebar-width: 260px;
+        }
+        body { background: #f1f5f9; font-family: 'Segoe UI', sans-serif; }
+        .sidebar {
+            width: var(--sidebar-width);
+            min-height: 100vh;
+            background: linear-gradient(180deg, #1e3a5f 0%, #2563eb 100%);
+            position: fixed;
+            top: 0; left: 0;
+            z-index: 1000;
+            transition: .3s;
+        }
+        .sidebar-brand {
+            padding: 20px 24px;
+            border-bottom: 1px solid rgba(255,255,255,0.15);
+        }
+        .sidebar-brand h5 { color: #fff; margin: 0; font-weight: 700; font-size: 1rem; }
+        .sidebar-brand small { color: rgba(255,255,255,0.6); font-size: 0.75rem; }
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.75);
+            padding: 10px 24px;
+            border-radius: 0;
+            font-size: 0.875rem;
+            transition: .2s;
+        }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active {
+            color: #fff;
+            background: rgba(255,255,255,0.15);
+        }
+        .sidebar .nav-link i { width: 20px; margin-right: 10px; }
+        .sidebar .nav-section {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(255,255,255,0.4);
+            padding: 16px 24px 4px;
+            font-weight: 600;
+        }
+        .main-content {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+        }
+        .topbar {
+            background: #fff;
+            padding: 12px 24px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+        }
+        .page-content { padding: 24px; }
+        .card { border: none; box-shadow: 0 1px 3px rgba(0,0,0,0.08); border-radius: 12px; }
+        .card-header { background: #fff; border-bottom: 1px solid #f1f5f9; border-radius: 12px 12px 0 0 !important; }
+        .btn-primary { background: var(--primary); border-color: var(--primary); }
+        .table th { font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b; }
+        .badge { font-size: 0.75rem; }
+        .stat-card { border-radius: 12px; padding: 20px; color: #fff; }
+        @@media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.show { transform: translateX(0); }
+            .main-content { margin-left: 0; }
+        }
+    </style>
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body>
+@if (User.Identity?.IsAuthenticated == true)
+{
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <h5><i class="fas fa-building me-2"></i>Room Booking</h5>
+            <small>Management System</small>
+        </div>
+        <div class="pt-2">
+            <div class="nav-section">Menu</div>
+            <a asp-controller="Home" asp-action="Index" class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" ? "active" : "")">
+                <i class="fas fa-tachometer-alt"></i>Dashboard
+            </a>
+            <a asp-controller="Booking" asp-action="Index" class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Booking" ? "active" : "")">
+                <i class="fas fa-calendar-check"></i>Booking Ruangan
+            </a>
+            <a asp-controller="Room" asp-action="Index" class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Room" ? "active" : "")">
+                <i class="fas fa-door-open"></i>Daftar Ruangan
+            </a>
+            @if (User.IsInRole("Admin"))
+            {
+                <div class="nav-section">Admin</div>
+                <a asp-controller="User" asp-action="Index" class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "User" ? "active" : "")">
+                    <i class="fas fa-users"></i>Kelola User
+                </a>
+            }
+        </div>
+    </div>
+
+    <!-- Main -->
+    <div class="main-content">
+        <div class="topbar">
+            <div class="d-flex align-items-center gap-2">
+                <button class="btn btn-sm btn-light d-md-none" onclick="document.getElementById('sidebar').classList.toggle('show')">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <span class="text-muted">@ViewData["Title"]</span>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <span class="badge bg-primary">@(User.IsInRole("Admin") ? "Admin" : "User")</span>
+                <span class="fw-semibold text-dark">@User.Identity?.Name</span>
+                <form asp-controller="Account" asp-action="Logout" method="post" class="m-0">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                        <i class="fas fa-sign-out-alt me-1"></i>Logout
+                    </button>
+                </form>
+            </div>
+        </div>
+        <div class="page-content">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+            @RenderBody()
+        </div>
+    </div>
+}
+else
+{
+    @RenderBody()
+}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

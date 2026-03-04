@@ -1,0 +1,79 @@
+@model RoomBooking.ViewModels.BookingEditViewModel
+@{
+    ViewData["Title"] = "Edit Booking";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card">
+            <div class="card-header py-3 px-4">
+                <h5 class="mb-0 fw-bold"><i class="fas fa-calendar-edit me-2 text-warning"></i>Edit Booking #@Model.Id</h5>
+            </div>
+            <div class="card-body px-4 py-4">
+                <form asp-action="Edit" asp-route-id="@Model.Id" method="post">
+                    @Html.AntiForgeryToken()
+                    <input asp-for="Id" type="hidden"/>
+                    <div asp-validation-summary="All" class="alert alert-danger py-2 small" style="display:@(ViewData.ModelState.IsValid ? "none" : "block")"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="RoomId" class="form-label fw-semibold">Ruangan *</label>
+                        <select asp-for="RoomId" class="form-select">
+                            @foreach (var r in Model.AvailableRooms)
+                            {
+                                <option value="@r.Id">@r.Name — @r.Location</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="BookingDate" class="form-label fw-semibold">Tanggal *</label>
+                        <input asp-for="BookingDate" type="date" class="form-control"/>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-6">
+                            <label asp-for="StartTime" class="form-label fw-semibold">Jam Mulai *</label>
+                            <input asp-for="StartTime" type="time" class="form-control"/>
+                        </div>
+                        <div class="col-6">
+                            <label asp-for="EndTime" class="form-label fw-semibold">Jam Selesai *</label>
+                            <input asp-for="EndTime" type="time" class="form-control"/>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Purpose" class="form-label fw-semibold">Keperluan *</label>
+                        <input asp-for="Purpose" class="form-control"/>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Notes" class="form-label fw-semibold">Catatan</label>
+                        <textarea asp-for="Notes" class="form-control" rows="2"></textarea>
+                    </div>
+
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <div class="mb-4">
+                            <label asp-for="Status" class="form-label fw-semibold">Status</label>
+                            <select asp-for="Status" class="form-select">
+                                @foreach (var s in new[] {"Pending","Approved","Rejected","Cancelled"})
+                                {
+                                    <option value="@s">@s</option>
+                                }
+                            </select>
+                        </div>
+                    }
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-warning">
+                            <i class="fas fa-save me-2"></i>Update Booking
+                        </button>
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-1"></i>Kembali
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

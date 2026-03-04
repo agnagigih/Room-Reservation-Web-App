@@ -1,0 +1,129 @@
+@{
+    ViewData["Title"] = "Dashboard";
+}
+@using RoomBooking.Models
+
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #2563eb, #1d4ed8);">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="opacity-75 small fw-semibold">Total Ruangan</div>
+                    <div class="fs-2 fw-bold">@ViewBag.TotalRooms</div>
+                </div>
+                <div style="opacity:.6; font-size:2rem;"><i class="fas fa-door-open"></i></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #059669, #047857);">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="opacity-75 small fw-semibold">Booking Hari Ini</div>
+                    <div class="fs-2 fw-bold">@ViewBag.TodayBookings</div>
+                </div>
+                <div style="opacity:.6; font-size:2rem;"><i class="fas fa-calendar-day"></i></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #d97706, #b45309);">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="opacity-75 small fw-semibold">Menunggu Persetujuan</div>
+                    <div class="fs-2 fw-bold">@ViewBag.PendingBookings</div>
+                </div>
+                <div style="opacity:.6; font-size:2rem;"><i class="fas fa-clock"></i></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #7c3aed, #6d28d9);">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="opacity-75 small fw-semibold">Total Booking</div>
+                    <div class="fs-2 fw-bold">@ViewBag.TotalBookings</div>
+                </div>
+                <div style="opacity:.6; font-size:2rem;"><i class="fas fa-calendar-check"></i></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center py-3 px-4">
+                <h6 class="mb-0 fw-bold">Booking Terbaru</h6>
+                <a asp-controller="Booking" asp-action="Index" class="btn btn-sm btn-outline-primary">Lihat Semua</a>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="px-4">Pemesanan</th>
+                                <th>Ruangan</th>
+                                <th>Tanggal</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var b in (List<Booking>)ViewBag.RecentBookings)
+                            {
+                                <tr>
+                                    <td class="px-4">
+                                        <div class="fw-semibold">@b.User?.FullName</div>
+                                        <small class="text-muted">@b.Purpose</small>
+                                    </td>
+                                    <td>@b.Room?.Name</td>
+                                    <td>
+                                        <div>@b.BookingDate.ToString("dd MMM yyyy")</div>
+                                        <small class="text-muted">@b.StartTime - @b.EndTime</small>
+                                    </td>
+                                    <td>
+                                        @{
+                                            var badgeClass = b.Status switch {
+                                                "Approved" => "bg-success",
+                                                "Pending" => "bg-warning text-dark",
+                                                "Rejected" => "bg-danger",
+                                                "Cancelled" => "bg-secondary",
+                                                _ => "bg-light text-dark"
+                                            };
+                                        }
+                                        <span class="badge @badgeClass">@b.Status</span>
+                                    </td>
+                                </tr>
+                            }
+                            @if (!((List<Booking>)ViewBag.RecentBookings).Any())
+                            {
+                                <tr><td colspan="4" class="text-center text-muted py-4">Belum ada booking</td></tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card h-100">
+            <div class="card-header py-3 px-4">
+                <h6 class="mb-0 fw-bold">Aksi Cepat</h6>
+            </div>
+            <div class="card-body d-flex flex-column gap-2">
+                <a asp-controller="Booking" asp-action="Create" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Buat Booking Baru
+                </a>
+                <a asp-controller="Room" asp-action="Index" class="btn btn-outline-primary">
+                    <i class="fas fa-door-open me-2"></i>Lihat Ruangan
+                </a>
+                @if (User.IsInRole("Admin"))
+                {
+                    <a asp-controller="User" asp-action="Create" class="btn btn-outline-secondary">
+                        <i class="fas fa-user-plus me-2"></i>Tambah User
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+</div>

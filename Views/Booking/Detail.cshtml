@@ -1,0 +1,117 @@
+@model RoomBooking.Models.Booking
+@{
+    ViewData["Title"] = "Detail Booking";
+    var statusClass = Model.Status switch {
+        "Approved" => "success", "Pending" => "warning", "Rejected" => "danger", _ => "secondary"
+    };
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card">
+            <div class="card-header py-3 px-4 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-bold"><i class="fas fa-calendar-check me-2 text-primary"></i>Detail Booking #@Model.Id</h5>
+                <span class="badge bg-@statusClass fs-6">@Model.Status</span>
+            </div>
+            <div class="card-body px-4 py-4">
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <div class="bg-light rounded p-3">
+                            <div class="text-muted small mb-1">Pemohon</div>
+                            <div class="fw-semibold">@Model.User?.FullName</div>
+                            <div class="small text-muted">@Model.User?.Email</div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="bg-light rounded p-3">
+                            <div class="text-muted small mb-1">Ruangan</div>
+                            <div class="fw-semibold">@Model.Room?.Name</div>
+                            <div class="small text-muted">@Model.Room?.Location · Kapasitas @Model.Room?.Capacity orang</div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="bg-light rounded p-3">
+                            <div class="text-muted small mb-1">Tanggal</div>
+                            <div class="fw-semibold">@Model.BookingDate.ToString("dddd, dd MMMM yyyy")</div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="bg-light rounded p-3">
+                            <div class="text-muted small mb-1">Waktu</div>
+                            <div class="fw-semibold">@Model.StartTime – @Model.EndTime WIB</div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="bg-light rounded p-3">
+                            <div class="text-muted small mb-1">Keperluan</div>
+                            <div class="fw-semibold">@Model.Purpose</div>
+                        </div>
+                    </div>
+                    @if (!string.IsNullOrEmpty(Model.Notes))
+                    {
+                        <div class="col-12">
+                            <div class="bg-light rounded p-3">
+                                <div class="text-muted small mb-1">Catatan</div>
+                                <div>@Model.Notes</div>
+                            </div>
+                        </div>
+                    }
+                    <div class="col-sm-6">
+                        <div class="bg-light rounded p-3">
+                            <div class="text-muted small mb-1">Dibuat</div>
+                            <div>@Model.CreatedAt.ToString("dd MMM yyyy HH:mm")</div>
+                        </div>
+                    </div>
+                    @if (Model.UpdatedAt.HasValue)
+                    {
+                        <div class="col-sm-6">
+                            <div class="bg-light rounded p-3">
+                                <div class="text-muted small mb-1">Terakhir Diperbarui</div>
+                                <div>@Model.UpdatedAt.Value.ToString("dd MMM yyyy HH:mm")</div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <div class="mt-4 d-flex gap-2">
+                    <a asp-action="Index" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>Kembali
+                    </a>
+                    @if (Model.Status == "Pending")
+                    {
+                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
+                            <i class="fas fa-edit me-1"></i>Edit
+                        </a>
+                    }
+
+                    @if (User.IsInRole("Admin") && Model.Status == "Pending")
+                    {
+                        <form asp-action="Approve" asp-route-id="@Model.Id" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <button onclick="return confirm('Setujui booking ini?')" class="btn btn-success">
+                                <i class="fas fa-check me-1"></i>Setujui
+                            </button>
+                        </form>
+
+                        <form asp-action="Reject" asp-route-id="@Model.Id" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <button onclick="return confirm('Tolak booking ini?')" class="btn btn-danger">
+                                <i class="fas fa-times me-1"></i>Tolak
+                            </button>
+                        </form>
+                    }
+
+                    @if (Model.Status is "Pending" or "Approved")
+                    {
+                        <form asp-action="Cancel" asp-route-id="@Model.Id" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <button onclick="return confirm('Batalkan booking ini?')" class="btn btn-outline-danger">
+                                <i class="fas fa-ban me-1"></i>Batalkan
+                            </button>
+                        </form>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
